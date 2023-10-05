@@ -29,3 +29,13 @@ def send_notification():
             username,
             f'Вам нужно сделать {action} в {place} в {time}'
         )
+
+    for h in pleasant_habits:
+        action = h.action
+        place = h.place
+        time = h.time
+        username = h.user.telegram
+        send_message(
+            username,
+            f'Вам нужно сделать {action} в {place} в {time}'
+        )

@@ -4,7 +4,7 @@ from habits.apps import HabitsConfig
 from rest_framework.routers import DefaultRouter
 
 from habits.views import PleasantHabitViewSet, HabitCreateAPIView, HabitListAPIView, HabitUpdateAPIView, \
-    HabitDestroyAPIView, PleasantHabitsPublicListAPIView
+    HabitDestroyAPIView, PublicHabitsListView
 
 app_name = HabitsConfig.name
 
@@ -18,5 +18,5 @@ urlpatterns = [
     path('habits/update/<int:pk>/', HabitUpdateAPIView.as_view(), name='habit_update'),
     path('habits/destroy/<int:pk>/', HabitDestroyAPIView.as_view(), name='habit_destroy'),
 
-    path('pleasant_habits/public/view/', PleasantHabitsPublicListAPIView.as_view(), name='public_habits_list'),
+    path('habits/public/view/', PublicHabitsListView.as_view(), name='public_habits_list'),
 ] + router.urls
