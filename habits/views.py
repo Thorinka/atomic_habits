@@ -1,12 +1,10 @@
-from django.shortcuts import render
 from rest_framework import viewsets, generics, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.filters import OrderingFilter
-from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
-
+from rest_framework.views import APIView
 from habits.models import Habit, PleasantHabit
 from habits.paginators import HabitsPaginator, PleasantHabitsPaginator, PleasantHabitsPublicPaginator
 from habits.permissions import IsOwner, IsModerator
@@ -42,14 +40,20 @@ class PleasantHabitViewSet(viewsets.ModelViewSet):
         )
 
 
-class PleasantHabitsPublicListAPIView(ListAPIView):
-    serializer_class = PleasantHabitSerializer
-    queryset = PleasantHabit.objects.filter(is_public=True).order_by('id')
+class PublicHabitsListView(APIView):
     permission_classes = [IsAuthenticated]
     pagination_class = PleasantHabitsPublicPaginator
-    filter_backends = [DjangoFilterBackend, OrderingFilter]
-    filterset_fields = ('user', 'is_public',)
-    ordering_fields = ('id', 'action',)
+
+    def get(self, request, *args, **kwargs):
+        habit_queryset = Habit.objects.filter(is_public=True)
+        pleasant_habit_queryset = PleasantHabit.objects.filter(is_public=True)
+
+        habit_serializer = HabitSerializer(habit_queryset, many=True)
+        pleasant_habit_serializer = PleasantHabitSerializer(pleasant_habit_queryset, many=True)
+
+        combined_results = habit_serializer.data + pleasant_habit_serializer.data
+
+        return Response(combined_results)
 
 
 class HabitCreateAPIView(generics.CreateAPIView):
